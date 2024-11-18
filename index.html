@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projektangebot Rechner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .result h3, .result p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Projektangebot Rechner</h1>
+    <h2>Kalkulieren Sie Ihr Angebot</h2>
+    
+    <form id="calculatorForm">
+        <!-- Personalkosten -->
+        <label for="hourlyRate">Stundensatz pro Berater (CHF):</label>
+        <input type="number" id="hourlyRate" placeholder="z.B. 100" required>
+
+        <label for="estimatedHours">Geschätzte Stunden pro Berater:</label>
+        <input type="number" id="estimatedHours" placeholder="z.B. 120" required>
+
+        <label for="numConsultants">Anzahl der Berater:</label>
+        <input type="number" id="numConsultants" placeholder="z.B. 2" required>
+        
+        <!-- Reisedaten -->
+        <label for="travelFrequency">Reisehäufigkeit (Anzahl der Reisen):</label>
+        <input type="number" id="travelFrequency" placeholder="z.B. 5" required>
+        
+        <label for="travelCost">Kosten pro Reise (CHF):</label>
+        <input type="number" id="travelCost" placeholder="z.B. 300" required>
+        
+        <label for="accommodationCost">Unterkunftskosten pro Nacht (CHF):</label>
+        <input type="number" id="accommodationCost" placeholder="z.B. 80" required>
+
+        <label for="numNights">Anzahl der Nächte:</label>
+        <input type="number" id="numNights" placeholder="z.B. 10" required>
+        
+        <label for="perDiem">Tagespauschale (CHF):</label>
+        <input type="number" id="perDiem" placeholder="z.B. 50" required>
+
+        <!-- Materialkosten -->
+        <label for="softwareCost">Kosten für Software (CHF):</label>
+        <input type="number" id="softwareCost" placeholder="z.B. 500" required>
+        
+        <label for="equipmentRental">Ausrüstungsverleih (CHF):</label>
+        <input type="number" id="equipmentRental" placeholder="z.B. 200" required>
+        
+        <!-- Indirekte Kosten -->
+        <label for="overheadPercentage">Overhead (%):</label>
+        <input type="number" id="overheadPercentage" placeholder="z.B. 15" required>
+
+        <!-- Risiko und Puffer -->
+        <label for="contingencyPercentage">Risikofaktor (%):</label>
+        <input type="number" id="contingencyPercentage" placeholder="z.B. 10" required>
+
+        <!-- Gewinnmarge -->
+        <label for="profitMargin">Gewinnmarge (%):</label>
+        <input type="number" id="profitMargin" placeholder="z.B. 20" required>
+
+        <button type="button" onclick="calculateOffer()">Angebot berechnen</button>
+    </form>
+
+    <div class="result" id="result">
+        <h3>Berechnetes Angebot: <span id="totalCost">0</span> CHF</h3>
+        <div id="detailedCosts"></div>
+    </div>
+
+    <script>
+        function calculateOffer() {
+            // Personalkosten
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+            const estimatedHours = parseFloat(document.getElementById('estimatedHours').value);
+            const numConsultants = parseFloat(document.getElementById('numConsultants').value);
+
+            // Reise- und Unterkunftskosten
+            const travelFrequency = parseFloat(document.getElementById('travelFrequency').value);
+            const travelCost = parseFloat(document.getElementById('travelCost').value);
+            const accommodationCost = parseFloat(document.getElementById('accommodationCost').value);
+            const numNights = parseFloat(document.getElementById('numNights').value);
+            const perDiem = parseFloat(document.getElementById('perDiem').value);
+
+            // Materialkosten
+            const softwareCost = parseFloat(document.getElementById('softwareCost').value);
+            const equipmentRental = parseFloat(document.getElementById('equipmentRental').value);
+
+            // Indirekte Kosten
+            const overheadPercentage = parseFloat(document.getElementById('overheadPercentage').value);
+            const contingencyPercentage = parseFloat(document.getElementById('contingencyPercentage').value);
+
+            // Gewinnmarge
+            const profitMargin = parseFloat(document.getElementById('profitMargin').value);
+
+            // Berechnung der Gesamtkosten
+            const laborCost = hourlyRate * estimatedHours * numConsultants;
+            const travelTotal = travelFrequency * travelCost;
+            const accommodationTotal = accommodationCost * numNights;
+            const perDiemTotal = perDiem * numNights;
+            const materialCost = softwareCost + equipmentRental;
+            const totalDirectCost = laborCost + travelTotal + accommodationTotal + perDiemTotal + materialCost;
+
+            const overheadCost = totalDirectCost * (overheadPercentage / 100);
+            const contingencyCost = totalDirectCost * (contingencyPercentage / 100);
+            const profitCost = (totalDirectCost + overheadCost + contingencyCost) * (profitMargin / 100);
+
+            const totalCost = totalDirectCost + overheadCost + contingencyCost + profitCost;
+
+            // Detaillierte Kosten anzeigen
+            document.getElementById('totalCost').textContent = totalCost.toFixed(2);
+            document.getElementById('detailedCosts').innerHTML = `
+                <p><strong>Personalkosten:</strong> ${laborCost.toFixed(2)} CHF</p>
+                <p><strong>Reisekosten:</strong> ${travelTotal.toFixed(2)} CHF</p>
+                <p><strong>Unterkunftskosten:</strong> ${accommodationTotal.toFixed(2)} CHF</p>
+                <p><strong>Tagespauschale:</strong> ${perDiemTotal.toFixed(2)} CHF</p>
+                <p><strong>Materialkosten:</strong> ${materialCost.toFixed(2)} CHF</p>
+                <p><strong>Overhead-Kosten:</strong> ${overheadCost.toFixed(2)} CHF</p>
+                <p><strong>Risiko (Contingency):</strong> ${contingencyCost.toFixed(2)} CHF</p>
+                <p><strong>Gewinn:</strong> ${profitCost.toFixed(2)} CHF</p>
+            `;
+        }
+    </script>
+</body>
+</html>
